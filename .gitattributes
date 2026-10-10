@@ -1,0 +1,2 @@
+# Les scripts sont lus par bash dans le conteneur : toujours en LF.
+*.sh text eol=lf

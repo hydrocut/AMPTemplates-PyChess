@@ -1,0 +1,136 @@
+[
+    {
+        "DisplayName": "Adresse publique du site",
+        "Category": "PyChess:public",
+        "Subcategory": "Site:language:1",
+        "Description": "L'adresse EXACTE que les joueurs tapent dans leur navigateur, sans / final, par exemple https://echecs.teamkit.fr (un sous-domaine en HTTPS derrière nginx, voir le README). PyChess s'en sert pour la connexion Lichess / Discord (adresse de retour), les cookies et la protection des parties : une adresse fausse empêche de se connecter. En http://IP:port le jeu marche, mais l'analyse par Fairy-Stockfish dans le navigateur demande HTTPS.",
+        "Keywords": "adresse,url,uri,domaine,https,site,nginx",
+        "FieldName": "uri",
+        "InputType": "text",
+        "ParamFieldName": "uri",
+        "DefaultValue": "https://echecs.teamkit.fr",
+        "EnumValues": {}
+    },
+    {
+        "DisplayName": "Administrateurs",
+        "Category": "PyChess:public",
+        "Subcategory": "Comptes et connexion:people:2",
+        "Description": "Pseudos PyChess des administrateurs du site, séparés par des virgules, sans espace (ex. Kevin,Marine). Un compte se crée en se connectant avec Lichess (ou Discord si configuré) : c'est le pseudo choisi à ce moment-là. Vide = aucun administrateur.",
+        "Keywords": "admin,administrateur,moderateur,admins",
+        "FieldName": "admins",
+        "InputType": "text",
+        "ParamFieldName": "admins",
+        "DefaultValue": "",
+        "EnumValues": {}
+    },
+    {
+        "DisplayName": "Nom de l'application sur Lichess",
+        "Category": "PyChess:public",
+        "Subcategory": "Comptes et connexion:people:2",
+        "Description": "Nom affiché par Lichess quand un joueur clique « Se connecter avec Lichess ». Aucune clé ni inscription chez Lichess : Lichess accepte n'importe quel nom unique (client public, PKCE). Lettres, chiffres, point et tiret.",
+        "Keywords": "lichess,oauth,connexion,login,client_id",
+        "FieldName": "lichess",
+        "InputType": "text",
+        "ParamFieldName": "lichess",
+        "DefaultValue": "echecs.teamkit.fr",
+        "EnumValues": {}
+    },
+    {
+        "DisplayName": "Discord : identifiant de l'application (facultatif)",
+        "Category": "PyChess:public",
+        "Subcategory": "Comptes et connexion:people:2",
+        "Description": "Pour le bouton « Se connecter avec Discord ». Discord Developer Portal → ton application → OAuth2 : Client ID, et ajoute la redirection <adresse publique>/oauth/discord (ex. https://echecs.teamkit.fr/oauth/discord). Vide = le bouton Discord ne marche pas (Lichess reste disponible).",
+        "Keywords": "discord,oauth,client id,connexion",
+        "FieldName": "discord_id",
+        "InputType": "text",
+        "ParamFieldName": "discord_id",
+        "DefaultValue": "",
+        "EnumValues": {}
+    },
+    {
+        "DisplayName": "Discord : secret de l'application (facultatif)",
+        "Category": "PyChess:public",
+        "Subcategory": "Comptes et connexion:people:2",
+        "Description": "Client Secret de la même application Discord (OAuth2). Pas de guillemet ni d'espace.",
+        "Keywords": "discord,oauth,secret,connexion",
+        "FieldName": "discord_secret",
+        "InputType": "password",
+        "ParamFieldName": "discord_secret",
+        "DefaultValue": "",
+        "EnumValues": {}
+    },
+    {
+        "DisplayName": "Adversaire IA Fairy-Stockfish",
+        "Category": "PyChess:public",
+        "Subcategory": "Moteur:memory:3",
+        "Description": "oui = le moteur Fairy-Stockfish tourne dans l'instance (fairyfishnet branché en local) : « Jouer contre l'ordinateur » dans toutes les variantes, niveaux 1 à 8. Il télécharge ~3 Go de réseaux NNUE au premier démarrage et prend ~0,5 Go de RAM en plus. non = seul Random-Mover (coups au hasard) joue contre les joueurs. Lancer Update après un passage à oui.",
+        "Keywords": "ia,ai,moteur,stockfish,fairy,fishnet,ordinateur,bot",
+        "FieldName": "moteur",
+        "InputType": "enum",
+        "ParamFieldName": "moteur",
+        "DefaultValue": "oui",
+        "EnumValues": {
+            "oui": "Oui (recommandé)",
+            "non": "Non (Random-Mover seulement)"
+        }
+    },
+    {
+        "DisplayName": "Cœurs du moteur",
+        "Category": "PyChess:public",
+        "Subcategory": "Moteur:memory:3",
+        "Description": "Cœurs processeur que Fairy-Stockfish peut utiliser pendant qu'il calcule un coup ou une analyse (au repos il ne consomme rien). 1 suffit pour quelques parties à la fois contre l'IA.",
+        "Keywords": "coeurs,cores,threads,cpu,moteur",
+        "FieldName": "coeurs",
+        "InputType": "number",
+        "MinValue": "1",
+        "MaxValue": "8",
+        "ParamFieldName": "coeurs",
+        "DefaultValue": "1",
+        "Suffix": "cœurs",
+        "EnumValues": {}
+    },
+    {
+        "DisplayName": "Mémoire de calcul du moteur",
+        "Category": "PyChess:public",
+        "Subcategory": "Moteur:memory:3",
+        "Description": "Table de hachage de Fairy-Stockfish (option Hash), de 16 à 512 Mo. Ce n'est pas toute sa mémoire : les réseaux NNUE chargés ajoutent ~400 Mo.",
+        "Keywords": "hash,memoire,moteur,ram",
+        "FieldName": "hash",
+        "InputType": "number",
+        "MinValue": "16",
+        "MaxValue": "512",
+        "ParamFieldName": "hash",
+        "DefaultValue": "64",
+        "Suffix": "Mo",
+        "EnumValues": {}
+    },
+    {
+        "DisplayName": "Cache de la base MongoDB",
+        "Category": "PyChess:public",
+        "Subcategory": "Moteur:memory:3",
+        "Description": "Mémoire réservée par MongoDB à son cache (WiredTiger). Par défaut MongoDB prendrait la moitié de la RAM de la machine : on le bride. 0,25 Go suffit pour une communauté de quelques centaines de joueurs.",
+        "Keywords": "mongodb,cache,wiredtiger,memoire,base",
+        "FieldName": "cache_mongo",
+        "InputType": "enum",
+        "ParamFieldName": "cache_mongo",
+        "DefaultValue": "0.25",
+        "EnumValues": {
+            "0.25": "0,25 Go (défaut)",
+            "0.5": "0,5 Go",
+            "1": "1 Go"
+        }
+    },
+    {
+        "DisplayName": "Version de PyChess Variants",
+        "Category": "Updates",
+        "Subcategory": "Server Updates:build:-1",
+        "Description": "Vide = le dernier tag publié sur github.com/pychess/pychess-variants (ex. 1.11.72), vérifié à chaque Update. Un tag précis = rester dessus. master = le code du jour (celui de pychess.org, moins sûr). Lancer Update après un changement : l'interface est reconstruite (~1 min), l'ancienne version est gardée si la construction échoue. Les données (base, comptes, parties) ne sont jamais touchées.",
+        "Keywords": "version,tag,master,mise a jour,update,pychess",
+        "FieldName": "version",
+        "InputType": "text",
+        "ParamFieldName": "version",
+        "DefaultValue": "",
+        "Placeholder": "1.11.72",
+        "EnumValues": {}
+    }
+]

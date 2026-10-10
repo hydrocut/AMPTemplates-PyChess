@@ -1,0 +1,9 @@
+[
+    {
+        "Protocol": "TCP",
+        "Port": 9180,
+        "Ref": "WebPort",
+        "Name": "Port du site (HTTP)",
+        "Description": "Port HTTP de PyChess, a mettre derriere nginx (proxy_pass http://127.0.0.1:9180) pour un sous-domaine en HTTPS. Hors de la plage 8080-8180 des panneaux AMP. A ne PAS ouvrir au public dans le pare-feu : les joueurs passent par https://echecs.teamkit.fr."
+    }
+]

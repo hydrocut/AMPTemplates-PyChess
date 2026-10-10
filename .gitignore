@@ -1,0 +1,14 @@
+# Ce depot ne contient que le template : PyChess, MongoDB, Python, Node et le moteur
+# sont telecharges dans l'instance a l'Update. Rien de ce qui suit ne doit y entrer.
+pychess/
+site/
+outils/
+moteur/
+donnees/
+secrets.env
+perso.env
+*.nnue
+__pycache__/
+
+# Notes internes de TeamKit (essais, etapes), pas dans le depot public
+FAISABILITE.md
