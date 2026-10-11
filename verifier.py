@@ -232,7 +232,7 @@ if bash:
         r = subprocess.run([bash, os.path.join(ICI, LANCEUR)] + argv, capture_output=True, text=True, env=env)
         ok = r.returncode == 0 and 'reglages valides' in r.stdout
         return (ok, r.stdout) if sortie else ok
-    BONS = [{}, {'uri': 'https://echecs.teamkit.fr/'}, {'uri': 'http://51.254.47.151:9180'},
+    BONS = [{}, {'uri': 'https://echecs.teamkit.fr/'}, {'uri': 'http://203.0.113.10:9180'},
             {'admins': 'Kevin,Marine_2,jean-luc'}, {'discord_id': '1234567890123', 'discord_secret': 'aB3_x-Y'},
             {'moteur': 'non'}, {'coeurs': '8', 'hash': '512', 'cache_mongo': '1'}, {'lichess': ''}]
     MAUVAIS = [{'uri': ''}, {'uri': 'echecs.teamkit.fr'}, {'uri': 'https://echecs.teamkit.fr/jeu'},

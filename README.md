@@ -149,8 +149,9 @@ log): `App.EnvironmentVariables` hands them to the start script as `TK_DISCORD_I
 `PYTHONUNBUFFERED=1` is required: without it, Python's output is block-buffered when it is not a
 terminal and the AMP console stays silent. PyChess logs at DEBUG level even with `PROD=true` (its
 logging config lives in MongoDB); `Console.ThrowawayMessageRegex` drops the DEBUG lines and MongoDB's
-JSON start-up line, INFO/WARN/ERROR lines stay. There is no player list in AMP (`MaxUsers=0`): it is a
-website, players are not "connected to a server" in AMP's sense.
+JSON start-up line, INFO/WARN/ERROR lines stay. There is no player list in AMP: it is a
+website, players are not "connected to a server" in AMP's sense. `App.MaxUsers=40` is only the
+capacity AMP and the TeamKit site display (40 guests at once is the load tested), not a limit.
 
 ## Update
 
