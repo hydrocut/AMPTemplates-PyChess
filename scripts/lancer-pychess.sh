@@ -4,7 +4,8 @@
 #   lancer-pychess.sh "port=<port>" "uri=<adresse publique>" "admins=<pseudos>" ...
 #
 # AMP passe chaque reglage sous la forme cle=valeur, entre guillemets : un reglage
-# vide reste un argument « cle= » et ne decale jamais les autres.
+# vide reste un argument « cle= » et ne decale jamais les autres. Seule exception :
+# l'application Discord arrive par TK_DISCORD_ID et TK_DISCORD_SECRET (environnement).
 #
 # 1. demarre MongoDB, joignable SEULEMENT par une socket Unix dans /tmp du conteneur
 #    (aucun port TCP : rien d'expose, meme si l'instance est en reseau hote) ;
@@ -40,8 +41,15 @@ PORT="${V[port]}"
 URI="${V[uri]}"
 ADMINS="${V[admins]}"
 LICHESS_ID="${V[lichess]}"
-DISCORD_ID="${V[discord_id]}"
-DISCORD_SECRET="${V[discord_secret]}"
+# Discord : par variables d'environnement (App.EnvironmentVariables), jamais sur la ligne
+# de commande, visible dans ps et dans le journal d'AMP (audit du 11/10/2026). Une instance
+# creee avant passe encore discord_id= / discord_secret= en arguments : accepte en repli.
+if [ -z "${TK_DISCORD_ID+x}" ] && [ -z "${V[discord_id]+x}" ]; then
+  echo "ATTENTION : reglages Discord introuvables (App.EnvironmentVariables absent de l'instance) : connexion Discord desactivee."
+fi
+DISCORD_ID="${TK_DISCORD_ID:-${V[discord_id]}}"
+DISCORD_SECRET="${TK_DISCORD_SECRET:-${V[discord_secret]}}"
+unset TK_DISCORD_ID TK_DISCORD_SECRET
 MOTEUR="${V[moteur]:-oui}"
 COEURS="${V[coeurs]:-1}"
 HASH="${V[hash]:-64}"

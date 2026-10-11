@@ -127,6 +127,11 @@ cookies), `FISHNET_KEY` (local AI worker), `CLIENT_SECRET` (in PyChess 1.11.x it
 All values are validated by the start script before anything starts (no quotes, no spaces where they
 would break the command line, URI without path), with a French error message.
 
+The Discord ID and secret are **not** on the command line (it shows in `ps` on the host and in AMP's
+log): `App.EnvironmentVariables` hands them to the start script as `TK_DISCORD_ID` /
+`TK_DISCORD_SECRET`, which it unsets once read. An instance created before 11 Oct 2026 still passes
+`discord_id=` / `discord_secret=` as arguments; the script accepts them as a fallback.
+
 ## Start, ready line, stop
 
 `/bin/bash lancer-pychess.sh "port=…" "uri=…" …` (each setting as one quoted `key=value` argument):

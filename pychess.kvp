@@ -36,10 +36,10 @@ App.ExecutableLinux=/bin/bash
 App.WorkingDir=
 App.LinuxCommandLineArgs=
 App.WindowsCommandLineArgs=
-App.CommandLineArgs="{{$FullBaseDir}}lancer-pychess.sh" "port={{$WebPort}}" "uri={{uri}}" "admins={{admins}}" "lichess={{lichess}}" "discord_id={{discord_id}}" "discord_secret={{discord_secret}}" "moteur={{moteur}}" "coeurs={{coeurs}}" "hash={{hash}}" "cache_mongo={{cache_mongo}}"
+App.CommandLineArgs="{{$FullBaseDir}}lancer-pychess.sh" "port={{$WebPort}}" "uri={{uri}}" "admins={{admins}}" "lichess={{lichess}}" "moteur={{moteur}}" "coeurs={{coeurs}}" "hash={{hash}}" "cache_mongo={{cache_mongo}}"
 App.UseLinuxIOREDIR=False
 App.AppSettings={}
-App.EnvironmentVariables={}
+App.EnvironmentVariables={"TK_DISCORD_ID":"{{discord_id}}","TK_DISCORD_SECRET":"{{discord_secret}}"}
 App.CommandLineParameterFormat={0} {1}
 App.CommandLineParameterDelimiter=
 App.ExitMethod=SIGTERM

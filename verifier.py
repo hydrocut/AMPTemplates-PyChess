@@ -108,7 +108,22 @@ if '"{{$FullBaseDir}}installer-pychess.sh"' not in args_install:
     soucis.append('l\'etape d\'installation doit lancer "{{$FullBaseDir}}installer-pychess.sh"')
 passes_lanceur = dict(re.findall(r'"(\w+)=\{\{([$\w]+)\}\}"', cmd))
 passes_install = dict(re.findall(r'"(\w+)=\{\{([$\w]+)\}\}"', args_install))
-tous_args = re.findall(r'\{\{([$\w]+)\}\}', cmd + ' ' + args_install)
+# Les reglages secrets passent par l'environnement, jamais par la ligne de commande
+# (visible dans ps et dans le journal d'AMP) : audit du 11/10/2026.
+PAR_ENV = {'discord_id': 'TK_DISCORD_ID', 'discord_secret': 'TK_DISCORD_SECRET'}
+try:
+    env_kvp = json.loads(cles.get('App.EnvironmentVariables') or '{}')
+except ValueError:
+    env_kvp = {}
+    soucis.append('App.EnvironmentVariables : JSON illisible')
+for p, var in PAR_ENV.items():
+    if env_kvp.get(var) != '{{%s}}' % p:
+        soucis.append('App.EnvironmentVariables doit contenir "%s":"{{%s}}"' % (var, p))
+    if var not in lanceur:
+        soucis.append('le lanceur ne lit pas %s' % var)
+    if '{{%s}}' % p in cmd:
+        soucis.append('%s ne doit plus passer sur la ligne de commande' % p)
+tous_args = re.findall(r'\{\{([$\w]+)\}\}', cmd + ' ' + args_install + ' ' + ' '.join(env_kvp.values()))
 params = {}
 for c in config:
     p = c['ParamFieldName']
@@ -118,7 +133,7 @@ for c in config:
     if c['FieldName'] != p:
         soucis.append('%s : FieldName et ParamFieldName differents' % p)
     cible = passes_install if c['Category'] == 'Updates' else passes_lanceur
-    if cible.get(p) != p:
+    if p not in PAR_ENV and cible.get(p) != p:
         soucis.append('reglage %s pas passe sous la forme "%s={{%s}}" au %s' % (p, p, p, 'installeur' if c['Category'] == 'Updates' else 'lanceur'))
     if c['InputType'] == 'number' and not str(c.get('DefaultValue', '')).isdigit():
         soucis.append('%s : valeur par defaut non numerique' % p)
@@ -204,14 +219,19 @@ if bash:
     print('ok   bash -n                  les deux scripts')
 
     # -- 6. le lanceur face aux valeurs -----------------------------------------
-    def essai(**vals):
+    def essai(par_arguments=False, sortie=False, **vals):
         d = {p: str(c.get('DefaultValue', '')) for p, c in params.items() if c['Category'] != 'Updates'}
         d['port'] = '9180'
         d.update(vals)
-        argv = ['%s=%s' % (k, v) for k, v in d.items()]
         env = dict(os.environ, TK_ESSAI_REGLAGES='1')
+        for p, var in PAR_ENV.items():
+            env.pop(var, None)
+            if not par_arguments:
+                env[var] = d.pop(p)
+        argv = ['%s=%s' % (k, v) for k, v in d.items()]
         r = subprocess.run([bash, os.path.join(ICI, LANCEUR)] + argv, capture_output=True, text=True, env=env)
-        return r.returncode == 0 and 'reglages valides' in r.stdout
+        ok = r.returncode == 0 and 'reglages valides' in r.stdout
+        return (ok, r.stdout) if sortie else ok
     BONS = [{}, {'uri': 'https://echecs.teamkit.fr/'}, {'uri': 'http://51.254.47.151:9180'},
             {'admins': 'Kevin,Marine_2,jean-luc'}, {'discord_id': '1234567890123', 'discord_secret': 'aB3_x-Y'},
             {'moteur': 'non'}, {'coeurs': '8', 'hash': '512', 'cache_mongo': '1'}, {'lichess': ''}]
@@ -226,7 +246,15 @@ if bash:
     for v in MAUVAIS:
         if essai(**v):
             soucis.append('le lanceur accepte une valeur dangereuse : %r' % v)
-    print('ok   reglages                 %d valeurs acceptees, %d refusees comme prevu' % (len(BONS), len(MAUVAIS)))
+    # Instance creee avant le 11/10/2026 : Discord encore en arguments, doit toujours marcher.
+    if not essai(par_arguments=True, discord_id='1234567890123', discord_secret='aB3_x-Y'):
+        soucis.append('le lanceur refuse Discord passe en arguments (anciennes instances)')
+    if essai(par_arguments=True, discord_secret='a b'):
+        soucis.append('le lanceur accepte un secret Discord dangereux passe en arguments')
+    ok, sortie = essai(sortie=True)
+    if 'ATTENTION' in sortie:
+        soucis.append("le lanceur avertit a tort quand Discord arrive par l'environnement")
+    print("ok   reglages                 %d valeurs acceptees, %d refusees comme prevu, Discord par l'environnement" % (len(BONS), len(MAUVAIS)))
 else:
     print('--   bash                     pas de bash ici : syntaxe et reglages non verifies')
 
